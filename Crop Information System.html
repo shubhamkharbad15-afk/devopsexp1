@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crop Information System</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#f1f4ee;--panel:#fff;--ink:#1c2a21;--mute:#5c6b61;--line:#d8dfd3;--leaf:#2f7448;--sow:#3d8b5a;--harv:#d49a1f;--water:#2f7ba3;--sel:#e3eedf;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141c17;--panel:#1c2620;--ink:#e6eee8;--mute:#9aaa9f;--line:#2c3a31;--leaf:#6cc08a;--sow:#4da36b;--harv:#e0aa35;--water:#5fb0d8;--sel:#25362b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141c17;--panel:#1c2620;--ink:#e6eee8;--mute:#9aaa9f;--line:#2c3a31;--leaf:#6cc08a;--sow:#4da36b;--harv:#e0aa35;--water:#5fb0d8;--sel:#25362b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Public Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;margin:0;line-height:1.1}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 18px 48px}
+header{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:22px}
+h1{font-size:clamp(28px,5vw,44px);font-weight:700;letter-spacing:-.02em}
+header p{margin:6px 0 0;color:var(--mute);max-width:46ch}
+.now{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px}
+.now b{color:var(--leaf)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+input[type=search],select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+input[type=search]{flex:1 1 220px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:inherit;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--leaf);border-color:var(--leaf);color:#fff}
+:focus-visible{outline:2px solid var(--water);outline-offset:2px}
+main{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+.list{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.legend{display:flex;gap:14px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;color:var(--mute);flex-wrap:wrap}
+.sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.row{display:grid;grid-template-columns:1fr 152px;gap:12px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;border-bottom:1px solid var(--line);padding:11px 14px;cursor:pointer}
+.row:last-child{border-bottom:0}
+.row[aria-selected=true]{background:var(--sel)}
+.row b{display:block;font-weight:600}
+.row small{color:var(--mute)}
+.tag{font-size:12px;color:var(--leaf);font-weight:600}
+.strip{display:grid;grid-template-columns:repeat(12,1fr);gap:2px}
+.strip i{height:14px;border-radius:2px;background:var(--line)}
+.strip i.s{background:var(--sow)}.strip i.h{background:var(--harv)}.strip i.c{outline:2px solid var(--ink);outline-offset:1px}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;position:sticky;top:calc(12px + env(safe-area-inset-top,0px))}
+@media(max-width:820px){.detail{position:static}}
+.detail h2{font-size:30px;font-weight:700;letter-spacing:-.01em}
+.sub{color:var(--mute);margin:4px 0 16px}
+.cal{margin:14px 0 20px}
+.cal .strip{gap:3px}.cal .strip i{height:26px;border-radius:4px}
+.mon{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;font-size:11px;color:var(--mute);text-align:center;margin-top:4px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0}
+.facts div{border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+.facts dt{font-size:12.5px;color:var(--mute)}
+.facts dd{margin:1px 0 0;font-weight:600}
+.water{color:var(--water);letter-spacing:2px}
+h3{font-size:16px;margin:18px 0 6px}
+.detail ul{margin:0;padding-left:18px}
+.empty{padding:28px 14px;color:var(--mute);text-align:center}
+.theme{font:inherit;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer}
+@media(prefers-reduced-motion:no-preference){.detail{animation:in .25s ease}}
+@keyframes in{from{opacity:.4}to{opacity:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Crop Information System</h1>
+    <p>Sowing and harvest windows, growing conditions and common problems for major field crops.</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="now" id="now"></div>
+    <button class="theme" id="theme" type="button">Dark mode</button>
+  </div>
+</header>
+
+<div class="controls">
+  <input type="search" id="q" placeholder="Search crops, pests or soil" aria-label="Search crops">
+  <div class="chips" id="seasons" role="group" aria-label="Season"></div>
+  <select id="type" aria-label="Crop type"></select>
+  <button class="chip" id="nowBtn" aria-pressed="false" type="button">Sow this month</button>
+</div>
+
+<main>
+  <section class="list" aria-label="Crops">
+    <div class="legend"><span><span class="sw" style="background:var(--sow)"></span>Sowing</span><span><span class="sw" style="background:var(--harv)"></span>Harvest</span><span><span class="sw" style="outline:2px solid var(--ink);outline-offset:-1px"></span>This month</span></div>
+    <div id="list" role="listbox" aria-label="Crop list"></div>
+  </section>
+  <article class="detail" id="detail" aria-live="polite"></article>
+</main>
+</div>
+
+<script>
+var M=["J","F","M","A","M","J","J","A","S","O","N","D"];
+var MF=["January","February","March","April","May","June","July","August","September","October","November","December"];
+var CROPS=[
+{n:"Rice",t:"Cereal",s:"Kharif",sow:[5,6],h:[9,10],temp:"20–35 °C",rain:"1,000–2,000 mm",soil:"Clay loam",ph:"5.5–7.0",days:"110–150",y:"2.5–4 t/ha",w:3,npk:"100 : 50 : 50",pests:["Stem borer","Brown planthopper","Blast disease"],note:"Needs standing water during most of its growth. Transplant 21–25 day old seedlings."},
+{n:"Wheat",t:"Cereal",s:"Rabi",sow:[10,11],h:[2,3],temp:"10–25 °C",rain:"500–900 mm",soil:"Loam",ph:"6.0–7.5",days:"110–130",y:"3–5 t/ha",w:2,npk:"120 : 60 : 40",pests:["Aphids","Yellow rust","Termites"],note:"Sow before mid-December. Late sowing cuts yield as heat arrives during grain filling."},
+{n:"Maize",t:"Cereal",s:"Kharif",sow:[5,6],h:[8,9],temp:"21–30 °C",rain:"600–1,100 mm",soil:"Well-drained loam",ph:"5.8–7.0",days:"90–120",y:"4–6 t/ha",w:2,npk:"120 : 60 : 40",pests:["Fall armyworm","Stem borer","Leaf blight"],note:"Sensitive to waterlogging. Scout for armyworm from the early whorl stage."},
+{n:"Sorghum (Jowar)",t:"Cereal",s:"Rabi",sow:[8,9],h:[0,1],temp:"25–32 °C",rain:"400–600 mm",soil:"Deep black soil",ph:"6.0–8.5",days:"100–120",y:"1–2 t/ha",w:1,npk:"80 : 40 : 40",pests:["Shoot fly","Aphids","Grain mould"],note:"Rabi sorghum depends on stored soil moisture. Sow by early October to avoid shoot fly."},
+{n:"Cotton",t:"Fibre",s:"Kharif",sow:[4,5],h:[9,10,11,0],temp:"21–35 °C",rain:"600–1,200 mm",soil:"Black cotton soil",ph:"6.0–8.0",days:"150–180",y:"2–3 t/ha (seed cotton)",w:2,npk:"100 : 50 : 50",pests:["Pink bollworm","Whitefly","Jassids"],note:"Picked in several rounds. Keep refuge rows and monitor bollworm traps weekly."},
+{n:"Sugarcane",t:"Cash crop",s:"Annual",sow:[0,1,2],h:[11,0,1,2],temp:"20–35 °C",rain:"1,100–1,500 mm",soil:"Deep loam",ph:"6.5–7.5",days:"300–540",y:"70–100 t/ha",w:3,npk:"250 : 100 : 120",pests:["Early shoot borer","Woolly aphid","Red rot"],note:"A long-duration crop. Ratoon crops can be taken after harvest with good stubble care."},
+{n:"Soybean",t:"Oilseed",s:"Kharif",sow:[5,6],h:[8,9],temp:"20–30 °C",rain:"600–1,000 mm",soil:"Well-drained loam",ph:"6.0–7.0",days:"90–110",y:"1.5–2.5 t/ha",w:2,npk:"30 : 60 : 40",pests:["Girdle beetle","Stem fly","Yellow mosaic virus"],note:"Seed loses viability quickly. Test germination before sowing and treat seed with Rhizobium."},
+{n:"Groundnut",t:"Oilseed",s:"Kharif",sow:[5,6],h:[9],temp:"22–30 °C",rain:"500–1,000 mm",soil:"Sandy loam",ph:"6.0–7.0",days:"100–130",y:"1.5–2.5 t/ha",w:1,npk:"20 : 40 : 40",pests:["Leaf miner","Tikka leaf spot","White grub"],note:"Loose soil helps pegs penetrate. Gypsum at flowering improves pod filling."},
+{n:"Chickpea (Gram)",t:"Pulse",s:"Rabi",sow:[9,10],h:[1,2],temp:"15–25 °C",rain:"400–600 mm",soil:"Sandy loam",ph:"6.0–8.0",days:"95–110",y:"1–2 t/ha",w:1,npk:"20 : 50 : 20",pests:["Pod borer","Fusarium wilt","Cutworm"],note:"Grows on residual moisture. Choose wilt-resistant varieties and avoid excess irrigation."},
+{n:"Tomato",t:"Vegetable",s:"Rabi",sow:[9,10],h:[0,1,2],temp:"18–27 °C",rain:"Irrigated",soil:"Loam rich in organic matter",ph:"6.0–7.0",days:"90–120",y:"25–40 t/ha",w:2,npk:"120 : 60 : 60",pests:["Fruit borer","Leaf curl virus","Early blight"],note:"Stake plants and rotate with non-solanaceous crops to reduce wilt and nematodes."}
+];
+var state={q:"",season:"All",type:"All",now:false,sel:0};
+var cur=new Date().getMonth();
+var $=function(i){return document.getElementById(i)};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function strip(c){var o="";for(var m=0;m<12;m++){var k=c.sow.indexOf(m)>-1?"s":c.h.indexOf(m)>-1?"h":"";if(m===cur)k+=" c";o+='<i class="'+k+'"></i>'}return '<div class="strip">'+o+'</div>'}
+function range(a){var f=a[0],l=a[a.length-1];return a.length===1?MF[f]:MF[f]+" to "+MF[l]}
+function filtered(){var q=state.q.toLowerCase();return CROPS.filter(function(c){
+  if(state.season!=="All"&&c.s!==state.season)return false;
+  if(state.type!=="All"&&c.t!==state.type)return false;
+  if(state.now&&c.sow.indexOf(cur)<0)return false;
+  var hay=(c.n+" "+c.t+" "+c.soil+" "+c.pests.join(" ")).toLowerCase();
+  return !q||hay.indexOf(q)>-1})}
+function renderList(){
+  var f=filtered();
+  if(!f.length){$("list").innerHTML='<div class="empty">No crops match. Clear the search or change a filter.</div>';$("detail").innerHTML="";return}
+  if(f.indexOf(CROPS[state.sel])<0)state.sel=CROPS.indexOf(f[0]);
+  $("list").innerHTML=f.map(function(c){var i=CROPS.indexOf(c);
+    var tag=c.sow.indexOf(cur)>-1?' <span class="tag">Sow now</span>':'';
+    return '<button class="row" role="option" data-i="'+i+'" aria-selected="'+(i===state.sel)+'"><span><b>'+esc(c.n)+tag+'</b><small>'+esc(c.t)+' · '+esc(c.s)+'</small></span>'+strip(c)+'</button>'}).join("");
+  renderDetail();
+}
+function renderDetail(){
+  var c=CROPS[state.sel];if(!c)return;
+  var mon=M.map(function(m){return"<span>"+m+"</span>"}).join("");
+  var facts=[["Temperature",c.temp],["Rainfall",c.rain],["Soil",c.soil],["Soil pH",c.ph],["Duration",c.days+" days"],["Typical yield",c.y],["Water need",'<span class="water" title="'+c.w+' of 3">'+"●".repeat(c.w)+'<span style="opacity:.25">'+"●".repeat(3-c.w)+'</span></span>'],["N : P : K (kg/ha)",c.npk]];
+  $("detail").innerHTML='<h2>'+esc(c.n)+'</h2><p class="sub">'+esc(c.t)+' · '+esc(c.s)+' season</p>'+
+  '<div class="cal">'+strip(c)+'<div class="mon">'+mon+'</div></div>'+
+  '<p><b>Sow:</b> '+range(c.sow)+'<br><b>Harvest:</b> '+range(c.h)+'</p>'+
+  '<dl class="facts">'+facts.map(function(f){return"<div><dt>"+f[0]+"</dt><dd>"+(f[0]==="Water need"?f[1]:esc(f[1]))+"</dd></div>"}).join("")+'</dl>'+
+  '<h3>Common problems</h3><ul>'+c.pests.map(function(p){return"<li>"+esc(p)+"</li>"}).join("")+'</ul>'+
+  '<h3>Grower’s note</h3><p style="margin:0">'+esc(c.note)+'</p>';
+}
+function init(){
+  $("now").innerHTML="Today: <b>"+MF[cur]+"</b> · "+CROPS.filter(function(c){return c.sow.indexOf(cur)>-1}).length+" crops to sow";
+  var ss=["All","Kharif","Rabi","Annual"];
+  $("seasons").innerHTML=ss.map(function(s){return'<button class="chip" type="button" data-s="'+s+'" aria-pressed="'+(s==="All")+'">'+s+'</button>'}).join("");
+  var ts=["All"].concat(CROPS.map(function(c){return c.t}).filter(function(v,i,a){return a.indexOf(v)===i}));
+  $("type").innerHTML=ts.map(function(t){return"<option value=\""+t+"\">"+(t==="All"?"All crop types":t)+"</option>"}).join("");
+  $("q").addEventListener("input",function(e){state.q=e.target.value;renderList()});
+  $("type").addEventListener("change",function(e){state.type=e.target.value;renderList()});
+  $("seasons").addEventListener("click",function(e){var b=e.target.closest("[data-s]");if(!b)return;state.season=b.dataset.s;
+    [].forEach.call($("seasons").children,function(x){x.setAttribute("aria-pressed",x===b)});renderList()});
+  $("nowBtn").addEventListener("click",function(e){state.now=!state.now;e.currentTarget.setAttribute("aria-pressed",state.now);renderList()});
+  $("list").addEventListener("click",function(e){var r=e.target.closest("[data-i]");if(!r)return;state.sel=+r.dataset.i;renderList()});
+  $("theme").addEventListener("click",function(){
+    var d=document.documentElement,dark=d.dataset.theme?d.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+    d.dataset.theme=dark?"light":"dark";$("theme").textContent=dark?"Dark mode":"Light mode"});
+  renderList();
+}
+init();
+</script>
+</body>
+</html>
